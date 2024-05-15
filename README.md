@@ -12,5 +12,4 @@ To assess the effectiveness of our predictive models, we also plot the MMSE (Min
 
 Results  
 The results section will include plots that demonstrate the MSE achieved by both the linear and MLP models across various SNR levels, compared against the MMSE Gaussian curve.
-![image](https://github.com/ZhifengWu7/BaselineModelOnTabularData/assets/166958489/14d1e235-6a73-4f3e-a547-d52fe2899866)
-
+![image](https://github.com/ZhifengWu7/BaselineModelOnTabularData/assets/166958489/3314a924-5e1a-43dd-9cac-153cca6fbab0)
