@@ -1,6 +1,6 @@
 Noise Prediction Models on Tabular Data
 
-Overview
+Overview  
 This repository contains implementation of linear and MLP (Multi-Layer Perceptron) models designed to predict noise levels at various log SNR (Signal-to-Noise Ratio) levels. These models calculate the Mean Squared Error (MSE) of noise predictions to evaluate performance.
 
 Models
