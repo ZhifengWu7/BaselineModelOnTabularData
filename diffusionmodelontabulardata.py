@@ -118,7 +118,7 @@ def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, 
 
         val_loss /= total_val_samples
 
-        # Early stopping
+        # Early stopping checks if there is no improvement
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             epochs_no_improve = 0
