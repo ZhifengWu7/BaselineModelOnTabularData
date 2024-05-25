@@ -12,5 +12,5 @@ The models are trained to predict the noise added to the synthetic data, and the
 ## Results
 ![image](https://github.com/ZhifengWu7/BaselineModelOnTabularData/assets/166958489/332994b0-9d15-4bd4-a27c-7c1987792888)
 - The dashed line represents the MMSE Gaussian, which indicates the performance of the optimal denoiser. The baseline model can achieve the same performance as the optimal denoiser.
-- The linear model performs well across various noise levels. At high noise levels, it nearly matches the optimal denoiser's performance, while at low noise levels, its performance drops slightly due to the diminishing effect of the noise coefficient in the optimal model.
-- The MLP model shows strong performance, especially at high noise levels where it closely approaches or slightly surpasses the linear model. However, at low noise levels, it lags behind the linear model. Notably, the MLP model achieves its best performance in fewer epochs compared to the linear model.
+- The linear model performs well across various noise levels. At high noise levels, it nearly matches the optimal denoiser's performance, while at low noise levels, its performance drops slightly.
+- The MLP model shows great performance, especially at high noise levels where it closely approaches or slightly surpasses the linear model. However, at low noise levels, it lags behind the linear model. Notably, the MLP model achieves its best performance in fewer epochs compared to the linear model.
