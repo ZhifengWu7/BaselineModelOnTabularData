@@ -7,7 +7,7 @@ The models are trained to predict the noise added to the synthetic data, and the
 
 ## Functions
 - `noisy_channels(x, logsnr)`: Adds Guassian noise based on the SNR. Parameters include x for input data and logsnr for noise level.
-- `train_and_evaluate(...)`: Train a model on noisy data, and return the validation loss. Trains a model on noisy data and returns the validation loss. Implements early stopping to prevent overfitting. Key parameters include model, batch size, and learning rate.
+- `train_and_evaluate(...)`: Trains a model on noisy data and returns the validation loss. Implements early stopping to prevent overfitting. Key parameters include model, batch size, and learning rate.
 
 ## Results
 ![image](https://github.com/ZhifengWu7/BaselineModelOnTabularData/assets/166958489/332994b0-9d15-4bd4-a27c-7c1987792888)
