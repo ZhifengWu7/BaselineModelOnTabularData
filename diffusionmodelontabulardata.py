@@ -6,9 +6,12 @@ from sklearn.datasets import make_low_rank_matrix
 from torch.utils.data import TensorDataset, DataLoader, random_split
 
 # Generate tabular data
-n_samples = 50  # Number of samples
-n = 50  # Number of rows in each matrix
-m = 30  # Number of columns in each matrix
+n_samples = 300  # Number of samples
+n = 20  # Number of rows in each matrix
+m = 10  # Number of columns in each matrix
+
+# Generate tabular data
+x = t.randn(n_samples, n, m)
 
 # Generate tabular data
 x = t.randn(n_samples, n, m)
@@ -65,7 +68,7 @@ class MLPModel(nn.Module):
         # Reshape the output tensor to the desired output dimensions
         return x.view(x.size(0), *self.out_dim)
 
-def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, patience):
+def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, patience, weight_decay):
     """Given a specific logsnr value, train the model and return val_loss."""
     dataset = TensorDataset(x)
     n = len(dataset)
@@ -80,7 +83,7 @@ def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, 
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
 
     # Setup the optimizer and loss function
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     criterion = nn.MSELoss(reduction='sum')
 
     best_val_loss = float('inf')
