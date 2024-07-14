@@ -80,7 +80,7 @@ class MLPModel(nn.Module):
         # Reshape the output tensor to the desired output dimensions
         return x.view(x.size(0), *self.out_dim)
 
-def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, patience, weight_decay):
+def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, weight_decay):
     """Given a specific logsnr value, train the model and return val_loss."""
     dataset = TensorDataset(x)
     n = len(dataset)
@@ -92,14 +92,11 @@ def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, 
 
     # Create data loaders for training and validation sets
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, drop_last=True)
 
     # Setup the optimizer and loss function
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     criterion = nn.MSELoss(reduction='sum')
-
-    best_val_loss = float('inf')
-    epochs_no_improve = 0
 
     for epoch in range(num_epochs):
         model.train()
@@ -119,32 +116,21 @@ def train_and_evaluate(x, logsnr, model, batch_size, num_epochs, learning_rate, 
 
         epoch_loss /= len(train_loader.dataset)
 
-        model.eval()
-        val_loss = 0
-        total_val_samples = 0
-        with t.no_grad():
-            for inputs in val_loader:
-                batch_x = inputs[0]
-                # Add noise to the validation data
-                z, eps = noisy_channels(batch_x, t.ones((len(batch_x))) * logsnr)
-                eps_hat = model(z)
-                val_loss += criterion(eps_hat, eps).item()
-                total_val_samples += len(batch_x)
+    model.eval()
+    val_loss = 0
+    total_val_samples = 0
+    with t.no_grad():
+        for inputs in val_loader:
+            batch_x = inputs[0]
+            # Add noise to the validation data
+            z, eps = noisy_channels(batch_x, t.ones((len(batch_x))) * logsnr)
+            eps_hat = model(z)
+            val_loss += criterion(eps_hat, eps).item()
+            total_val_samples += len(batch_x)
 
-        val_loss /= total_val_samples
+    val_loss /= total_val_samples
 
-        # Early stopping checks if there is no improvement
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            epochs_no_improve = 0
-        else:
-            epochs_no_improve += 1
-
-        if epochs_no_improve >= patience:
-            print(f'Early stopping at epoch {epoch + 1}')
-            break
-
-    return best_val_loss
+    return val_loss
 
 def train_and_evaluate_l1(x, logsnr, model, batch_size, num_epochs, learning_rate, patience, lambda_l1):
     """Given a specific logsnr value, train the model and return val_loss."""
