@@ -212,158 +212,16 @@ for logsnr in logsnrs:
 mmse_g = []
 mmse_g = rows * columns * t.sigmoid(logsnrs)
 
-
-
-
-def train_and_evaluate_l1(x, logsnr, model, batch_size, num_epochs, learning_rate, patience, lambda_l1):
-    """Given a specific logsnr value, train the model and return val_loss."""
-    dataset = TensorDataset(x)
-    n = len(dataset)
-
-    # Split the dataset into training and validation sets
-    train_size = int(0.9 * n)
-    val_size = n - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
-
-    # Create data loaders for training and validation sets
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
-    
-    # Setup the optimizer and loss function
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    criterion = nn.MSELoss(reduction='sum')
-
-    best_val_loss = float('inf')
-    epochs_no_improve = 0
-    
-    for epoch in range(num_epochs):
-        model.train()
-        epoch_loss = 0
-        for batch in train_loader:
-            batch_x = batch[0]
-            # Add noise to the input data
-            z, eps = noisy_channels(batch_x, t.ones(len(batch_x)) * logsnr)
-            optimizer.zero_grad()
-            # Predict the noise
-            eps_hat = model(z)
-            # Compute the loss
-            loss = criterion(eps_hat, eps)
-
-            # Add L1 regularization
-            l1_reg = 0
-            for param in model.parameters():
-              l1_reg += t.sum(t.abs(param))
-
-            loss += lambda_l1 * l1_reg
-
-            loss.backward()
-            optimizer.step()
-            epoch_loss += loss.item()
-
-        epoch_loss /= len(train_loader.dataset)
-
-        model.eval()
-        val_loss = 0
-        total_val_samples = 0
-        with t.no_grad():
-            for inputs in val_loader:
-                batch_x = inputs[0]
-                # Add noise to the validation data
-                z, eps = noisy_channels(batch_x, t.ones((len(batch_x))) * logsnr)
-                eps_hat = model(z)
-                val_loss += criterion(eps_hat, eps).item()
-                total_val_samples += len(batch_x)
-
-        val_loss /= total_val_samples
-
-        # Early stopping checks if there is no improvement
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            epochs_no_improve = 0
-        else:
-            epochs_no_improve += 1
-
-        if epochs_no_improve >= patience:
-            print(f'Early stopping at epoch {epoch + 1}')
-            break
-
-    return best_val_loss
-
-# Define training parameters
-batch_size = 5
-num_epochs_linear = 100
-num_epochs_mlp = 100
-learning_rate = 0.001
-patience = 20
-dropout = 0
-weight_decay = 1
-lambda_l1 = 0.1
-
-# Define logsnr range
-loc, s = 0, 1
-logsnrs = t.linspace(loc-4*s, loc+4*s, 10)
-
-# Initialize lists to store MSE values
-linear_mses_l2 = []
-linear_mses_l1 = []
-mlp_mses_l2 = []
-mlp_mses_l1 = []
-baseline_mses = []
-mmse_g = m * n * t.sigmoid(logsnrs)
-
-# Train and evaluate models for each logsnr value with optimal weight decay (L2 regularization)
-for logsnr in logsnrs:
-    linear_model = LinearRegressionModel(in_dim=n*m, out_dim=(n,m))
-    mlp_model = MLPModel(in_dim=n*m, out_dim=(n,m), dropout=dropout)
-    val_loss_linear = train_and_evaluate(x=x, logsnr=logsnr, model=linear_model, batch_size=batch_size, num_epochs=num_epochs_linear, learning_rate=learning_rate, patience=patience, weight_decay=weight_decay)
-    val_loss_mlp = train_and_evaluate(x=x, logsnr=logsnr, model=mlp_model, batch_size=batch_size, num_epochs=num_epochs_mlp, learning_rate=learning_rate, patience=patience, weight_decay=weight_decay)
-    linear_mses_l2.append(val_loss_linear)
-    mlp_mses_l2.append(val_loss_mlp)
-
-# Train and evaluate models for each logsnr value with optimal lambda for L1 regularization
-for logsnr in logsnrs:
-    linear_model = LinearRegressionModel(in_dim=n*m, out_dim=(n,m))
-    mlp_model = MLPModel(in_dim=n*m, out_dim=(n,m), dropout=dropout)
-    val_loss_linear = train_and_evaluate_l1(x=x, logsnr=logsnr, model=linear_model, batch_size=batch_size, num_epochs=num_epochs_linear, learning_rate=learning_rate, patience=patience, lambda_l1=lambda_l1)
-    val_loss_mlp = train_and_evaluate_l1(x=x, logsnr=logsnr, model=mlp_model, batch_size=batch_size, num_epochs=num_epochs_mlp, learning_rate=learning_rate, patience=patience, lambda_l1=lambda_l1)
-    linear_mses_l1.append(val_loss_linear)
-    mlp_mses_l1.append(val_loss_mlp)
-
-# Compute baseline MSE
-criterion = nn.MSELoss(reduction='sum')
-for logsnr in logsnrs:
-    logsnr = t.ones(len(x)) * logsnr
-    z, eps = noisy_channels(x, logsnr)
-    dims = tuple(1 for _ in range(len(x[0].shape)))
-    left = (-1,) + dims
-    logsnr = logsnr.view(left)
-
-    eps_hat = t.sqrt(t.sigmoid(-logsnr)) * z
-    baseline_mse = criterion(eps_hat, eps).item() / len(x)
-    baseline_mses.append(baseline_mse)
-
-# Plot the results for L2 Norm
+# rank=1, tail_length=0.1
 plt.figure(figsize=(10, 6))
-plt.plot(logsnrs.numpy(), linear_mses_l2, label='Linear Model (L2 Norm)')
-plt.plot(logsnrs.numpy(), mlp_mses_l2, label='MLP Model (L2 Norm)')
+plt.plot(logsnrs.numpy(), svd_mses, label='SVD Decomposition')
+plt.plot(logsnrs.numpy(), linear_mses, label='Linear Model')
+plt.plot(logsnrs.numpy(), mlp_mses, label='MLP Model')
 plt.plot(logsnrs.numpy(), baseline_mses, label='Baseline MSE')
-plt.plot(logsnrs.numpy(), mmse_g.numpy(), label='MMSE', linestyle='--')
+plt.plot(logsnrs.numpy(), mmse_g, label='MMSE', linestyle='--')
 plt.xlabel('Log SNR')
 plt.ylabel('MSE')
-plt.title('MSE vs. Log SNR for Multiple Models with L2 Norm')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-# Plot the results for L1 Norm
-plt.figure(figsize=(10, 6))
-plt.plot(logsnrs.numpy(), linear_mses_l1, label='Linear Model (L1 Norm)')
-plt.plot(logsnrs.numpy(), mlp_mses_l1, label='MLP Model (L1 Norm)')
-plt.plot(logsnrs.numpy(), baseline_mses, label='Baseline MSE')
-plt.plot(logsnrs.numpy(), mmse_g.numpy(), label='MMSE', linestyle='--')
-plt.xlabel('Log SNR')
-plt.ylabel('MSE')
-plt.title('MSE vs. Log SNR for Multiple Models with L1 Norm')
+plt.title('MSE vs. Log SNR for Multiple Models')
 plt.legend()
 plt.grid(True)
 plt.show()
