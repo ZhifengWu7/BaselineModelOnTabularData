@@ -2,16 +2,31 @@ import torch as t
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
+import numpy as np
+import torch.linalg
 from sklearn.datasets import make_low_rank_matrix
 from torch.utils.data import TensorDataset, DataLoader, random_split
 
 # Generate tabular data
-n_samples = 300  # Number of samples
-n = 20  # Number of rows in each matrix
-m = 10  # Number of columns in each matrix
+n_samples = 50000  # Number of samples
+rows = 30  # Number of rows in each matrix
+columns = 20  # Number of columns in each matrix
+rank = 5  # the rank of the matrix
+tail_strength = 0.1
+random_state = 42
 
 # Generate tabular data
-x = t.randn(n_samples, n, m)
+x = np.empty((n_samples, rows, columns))
+for i in range(n_samples):
+    x[i] = make_low_rank_matrix(n_samples=rows, n_features=columns, effective_rank=rank, tail_strength=tail_strength, random_state=random_state+i)
+
+# Normalize the data by subtracting the mean and dividing by the standard deviation.
+x_np = np.array(x)
+means = np.mean(x_np, axis=0)
+std_devs = np.std(x_np, axis=0)
+x_normalized = (x_np - means) / std_devs
+
+x = t.tensor(x_normalized, dtype=t.float32)
 
 def noisy_channels(x, logsnr):
     """Add Gaussian noise to x, return "z" and epsilon."""
