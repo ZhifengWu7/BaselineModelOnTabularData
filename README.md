@@ -13,7 +13,7 @@ pip install torch torchvision matplotlib numpy scikit-learn
 1. Clone the repository:
 ```bash
 git clone https://github.com/ZhifengWu7/BaselineModelOnTabularData.git
-cd BaselineModelOnTabularData\
+cd BaselineModelOnTabularData
 ```
 2. Run the main script:
 ```bash
