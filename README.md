@@ -1,9 +1,5 @@
 ## Overview
-The script generates synthetic tabular data and applies Gaussian noise to simulate different signal-to-noise ratios (SNRs). It includes two model architectures:
-- `LinearRegressionModel`: A simple linear regression model.
-- `MLPModel`: A multilayer perceptron model with a residual connection and optional dropout.
-
-The models are trained to predict the noise added to the synthetic data, and their performance is evaluated across a range of logarithmic SNR values. The results are plotted to compare the mean squared error (MSE) of each model against the baseline and minimum MSE (MMSE). The baseline model is defined by the formula eps_hat = t.sqrt(t.sigmoid(-logsnr)) * z.
+Denoising diffusion models have led to significant advances in density modeling and image generation. In this work, we focus on denoising tabular data to further explore the feasibility of density estimation and tabular generation. Specifically, we use linear models, MLP models, and SVD to predict noise in synthetic tabular data under different signal-to-noise ratios, comparing these with the analytical solution of MMSE.
 
 ## Functions
 - `noisy_channels(x, logsnr)`: Adds Guassian noise based on the SNR. Parameters include x for input data and logsnr for noise level.
