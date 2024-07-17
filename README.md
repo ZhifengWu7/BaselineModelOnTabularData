@@ -1,5 +1,5 @@
 ## Overview
-Denoising diffusion models have led to significant advances in density modeling and image generation. In this work, we focus on denoising tabular data to further explore the feasibility of density estimation and tabular generation. Specifically, we use linear models, MLP models, and SVD to predict noise in synthetic tabular data under different signal-to-noise ratios, comparing these with the analytical solution of MMSE.
+Denoising diffusion models have led to significant advances in density modeling and image generation. In this work, we focus on **denoising tabular data** to further explore the feasibility of density estimation and tabular generation. Specifically, we use linear models, MLP models, and SVD to predict noise in synthetic tabular data under different signal-to-noise ratios, comparing these with the analytical solution of MMSE.
 
 ## Requirements
 
