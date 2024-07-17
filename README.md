@@ -7,4 +7,5 @@ Denoising diffusion models have led to significant advances in density modeling 
 - `train_and_evaluate_l1(...)`: Trains a model on noisy data with L1 regularization and returns the validation loss. Implements early stopping to prevent overfitting. Key parameters include model, batch size, learning rate, and lambda for L1 regularization.
   
 ## Results
-![image](https://github.com/user-attachments/assets/61dd01d1-e72b-423f-a819-fdf9358c2daa)
+![image](https://github.com/user-attachments/assets/26c944a0-b1b8-47d5-a72e-a0597ef98774)
+
