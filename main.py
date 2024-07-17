@@ -1,8 +1,9 @@
 import torch as t
+import torch.nn as nn
 import matplotlib.pyplot as plt
 from data_generation import generate_tabular_data
 from models import LinearRegressionModel, MLPModel
-from train_eval import train_and_evaluate, compute_baseline_mse
+from train_eval import train_and_evaluate, compute_baseline_mse, noisy_channels
 from svd_eval import svd_predict_and_evaluate
 
 # Define parameters
