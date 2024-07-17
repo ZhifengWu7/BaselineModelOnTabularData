@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
-import torch.linalg
 from sklearn.datasets import make_low_rank_matrix
 from torch.utils.data import TensorDataset, DataLoader, random_split
 
@@ -11,7 +10,7 @@ from torch.utils.data import TensorDataset, DataLoader, random_split
 n_samples = 50000  # Number of samples
 rows = 30  # Number of rows in each matrix
 columns = 20  # Number of columns in each matrix
-rank = 5  # the rank of the matrix
+rank = 1  # the rank of the matrix
 tail_strength = 0.1
 random_state = 42
 
@@ -212,7 +211,6 @@ for logsnr in logsnrs:
 mmse_g = []
 mmse_g = rows * columns * t.sigmoid(logsnrs)
 
-# rank=1, tail_length=0.1
 plt.figure(figsize=(10, 6))
 plt.plot(logsnrs.numpy(), svd_mses, label='SVD Decomposition')
 plt.plot(logsnrs.numpy(), linear_mses, label='Linear Model')
