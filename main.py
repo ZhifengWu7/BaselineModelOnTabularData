@@ -77,7 +77,3 @@ plt.grid(True)
 # Save and show the plot
 plt.savefig('output.png')
 plt.show()
-
-# Display the saved plot in Jupyter notebook
-from IPython.display import Image, display
-display(Image(filename='output.png'))
